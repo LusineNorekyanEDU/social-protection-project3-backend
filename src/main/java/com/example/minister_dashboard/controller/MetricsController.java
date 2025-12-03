@@ -1,0 +1,33 @@
+package com.example.minister_dashboard.controller;
+
+import com.example.minister_dashboard.dto.ApplicationFunnelDto;
+import com.example.minister_dashboard.service.MetricsService;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.time.LocalDate;
+
+@RestController
+@RequestMapping("/metrics")
+public class MetricsController {
+    private final MetricsService metricsService;
+
+    public MetricsController(MetricsService metricsService) {
+        this.metricsService = metricsService;
+    }
+
+    @GetMapping("/application-funnel")
+    public ApplicationFunnelDto getFunnel(
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
+            @RequestParam(required = false) Long programId
+    ) {
+        return metricsService.getApplicationFunnel(from, to, programId);
+    }
+
+}
