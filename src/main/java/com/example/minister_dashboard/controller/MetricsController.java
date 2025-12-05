@@ -1,6 +1,7 @@
 package com.example.minister_dashboard.controller;
 
 import com.example.minister_dashboard.dto.ApplicationFunnelDto;
+import com.example.minister_dashboard.dto.BeneficiariesByCityDto;
 import com.example.minister_dashboard.service.MetricsService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,6 +29,17 @@ public class MetricsController {
             @RequestParam(required = false) Long programId
     ) {
         return metricsService.getApplicationFunnel(from, to, programId);
+    }
+
+    @GetMapping("/beneficiaries-by-city")
+    public BeneficiariesByCityDto getBeneficiaries(
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
+            @RequestParam(required = false) Long programId
+    ) {
+        return metricsService.getBeneficiariesByCity(from, to, programId);
     }
 
 }
