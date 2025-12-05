@@ -53,12 +53,44 @@ public class MetricsRepositoryImpl implements MetricsRepository {
             ApplicationStatus status1 = ApplicationStatus.valueOf(status);
             result.add(new ApplicationStatusCountRow(status1, count));
         }
-
         return result;
     }
 
     @Override
     public List<BeneficiariesByCityRow> getBeneficiariesByCity(LocalDate from, LocalDate to, Long programId) {
-        return List.of();
+        StringBuilder sql = new StringBuilder("""
+            SELECT city, COUNT(DISTINCT citizen_id) AS cnt
+            FROM v_application_summary
+            WHERE status = 'APPROVED'
+            """);
+
+        if (programId != null) {
+            sql.append(" AND program_id = :programId");
+        }
+        if (from != null) {
+            sql.append(" AND submission_date::date >= :fromDate");
+        }
+        if (to != null) {
+            sql.append(" AND submission_date::date <= :toDate");
+        }
+        sql.append(" GROUP BY city");
+        sql.append(" ORDER BY cnt DESC");
+
+        Query query = entityManager.createNativeQuery(sql.toString());
+
+        if (programId != null) query.setParameter("programId", programId);
+        if (from != null) query.setParameter("fromDate", from);
+        if (to != null) query.setParameter("toDate", to);
+
+        @SuppressWarnings("unchecked")
+        List<Object[]> rows = query.getResultList();
+
+        List<BeneficiariesByCityRow> result = new ArrayList<>();
+        for (Object[] r : rows) {
+            String city = (String) r[0];
+            long count = ((Number) r[1]).longValue();
+            result.add(new BeneficiariesByCityRow(city, count));
+        }
+        return result;
     }
 }

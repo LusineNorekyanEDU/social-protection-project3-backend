@@ -1,7 +1,9 @@
 package com.example.minister_dashboard.service;
 
 import com.example.minister_dashboard.dto.ApplicationFunnelDto;
+import com.example.minister_dashboard.dto.BeneficiariesByCityDto;
 import com.example.minister_dashboard.helper.ApplicationStatusCountRow;
+import com.example.minister_dashboard.helper.BeneficiariesByCityRow;
 import com.example.minister_dashboard.repository.MetricsRepository;
 import org.springframework.stereotype.Service;
 
@@ -31,5 +33,15 @@ public class MetricsService {
                         total == 0 ? 0.0 : ((double) (r.count() * 100) / total)
                 )).toList();
         return new ApplicationFunnelDto(total, items);
+    }
+
+    public BeneficiariesByCityDto getBeneficiariesByCity(LocalDate from , LocalDate to ,Long programId) {
+        List<BeneficiariesByCityRow> rows =  metricsRepository.getBeneficiariesByCity(from, to, programId);
+
+        List<BeneficiariesByCityDto.Item> items = rows.stream()
+                .map(r -> new BeneficiariesByCityDto.Item(r.city(),r.count()))
+                .toList();
+        return new BeneficiariesByCityDto(items);
+
     }
 }
