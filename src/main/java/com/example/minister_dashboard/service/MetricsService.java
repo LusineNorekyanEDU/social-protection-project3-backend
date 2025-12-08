@@ -2,11 +2,14 @@ package com.example.minister_dashboard.service;
 
 import com.example.minister_dashboard.dto.ApplicationFunnelDto;
 import com.example.minister_dashboard.dto.BeneficiariesByCityDto;
+import com.example.minister_dashboard.dto.FinancialLiabilityDto;
 import com.example.minister_dashboard.helper.ApplicationStatusCountRow;
 import com.example.minister_dashboard.helper.BeneficiariesByCityRow;
+import com.example.minister_dashboard.helper.LiabilityRow;
 import com.example.minister_dashboard.repository.MetricsRepository;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -43,5 +46,31 @@ public class MetricsService {
                 .toList();
         return new BeneficiariesByCityDto(items);
 
+    }
+
+    public FinancialLiabilityDto getLiability(LocalDate from, LocalDate to, Long programId) {
+
+        List<LiabilityRow> rows = metricsRepository.calculateLiability(from, to, programId);
+
+        List<FinancialLiabilityDto.ProgramLiability> byProgram = rows.stream()
+                .map(r -> {
+                    BigDecimal projected = r.payoutAmount()
+                            .multiply(BigDecimal.valueOf(r.approvedCount()));
+
+                    return new FinancialLiabilityDto.ProgramLiability(
+                            r.programId(),
+                            r.programName(),
+                            r.approvedCount(),
+                            r.payoutAmount(),
+                            projected
+                    );
+                })
+                .toList();
+
+        BigDecimal total = byProgram.stream()
+                .map(FinancialLiabilityDto.ProgramLiability::projectedLiability)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        return new FinancialLiabilityDto(total, byProgram);
     }
 }
