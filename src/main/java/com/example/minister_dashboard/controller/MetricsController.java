@@ -5,15 +5,13 @@ import com.example.minister_dashboard.dto.BeneficiariesByCityDto;
 import com.example.minister_dashboard.dto.FinancialLiabilityDto;
 import com.example.minister_dashboard.service.MetricsService;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/metrics")
+@CrossOrigin(origins = "http://localhost:4200")
 public class MetricsController {
     private final MetricsService metricsService;
 
