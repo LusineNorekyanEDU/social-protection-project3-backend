@@ -7,6 +7,7 @@ import com.example.minister_dashboard.helper.ApplicationStatusCountRow;
 import com.example.minister_dashboard.helper.BeneficiariesByCityRow;
 import com.example.minister_dashboard.helper.LiabilityRow;
 import com.example.minister_dashboard.repository.MetricsRepository;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -23,6 +24,10 @@ public class MetricsService {
         this.metricsRepository = metricsRepository;
     }
 
+    @Cacheable(
+            value = "applicationFunnel",
+            key = "{#from, #to, #programId}"
+    )
     public ApplicationFunnelDto getApplicationFunnel(LocalDate from, LocalDate to, Long programId) {
 
         List<ApplicationStatusCountRow> rows = metricsRepository.getApplicationFunnel(from, to, programId);
@@ -38,6 +43,10 @@ public class MetricsService {
         return new ApplicationFunnelDto(total, items);
     }
 
+    @Cacheable(
+            value = "beneficiariesByCity",
+            key = "{#from, #to, #programId}"
+    )
     public BeneficiariesByCityDto getBeneficiariesByCity(LocalDate from , LocalDate to ,Long programId) {
         List<BeneficiariesByCityRow> rows =  metricsRepository.getBeneficiariesByCity(from, to, programId);
 
@@ -48,6 +57,10 @@ public class MetricsService {
 
     }
 
+    @Cacheable(
+            value = "financialLiability",
+            key = "{#from, #to, #programId}"
+    )
     public FinancialLiabilityDto getLiability(LocalDate from, LocalDate to, Long programId) {
 
         List<LiabilityRow> rows = metricsRepository.calculateLiability(from, to, programId);
