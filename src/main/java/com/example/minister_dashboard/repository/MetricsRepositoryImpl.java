@@ -135,4 +135,33 @@ public class MetricsRepositoryImpl implements MetricsRepository {
 
         return result;
     }
+
+    @Override
+    public long countApprovedBeneficiaries(LocalDate from, LocalDate to, Long programId) {
+
+        StringBuilder sql = new StringBuilder("""
+        SELECT COUNT(DISTINCT citizen_id) AS cnt
+        FROM v_application_summary
+        WHERE status = 'APPROVED'
+        """);
+
+        if (programId != null) {
+            sql.append(" AND program_id = :programId");
+        }
+        if (from != null) {
+            sql.append(" AND submission_date::date >= :fromDate");
+        }
+        if (to != null) {
+            sql.append(" AND submission_date::date <= :toDate");
+        }
+
+        Query q = entityManager.createNativeQuery(sql.toString());
+
+        if (programId != null) q.setParameter("programId", programId);
+        if (from != null) q.setParameter("fromDate", from);
+        if (to != null) q.setParameter("toDate", to);
+
+        return ((Number) q.getSingleResult()).longValue();
+    }
+
 }
