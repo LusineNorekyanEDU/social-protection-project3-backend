@@ -13,4 +13,6 @@ public interface MetricsRepository {
     List<BeneficiariesByCityRow> getBeneficiariesByCity(LocalDate from, LocalDate to, Long programId);
 
     List<LiabilityRow> calculateLiability(LocalDate from, LocalDate to, Long programId);
+
+    long countApprovedBeneficiaries(LocalDate from, LocalDate to, Long programId);
 }
