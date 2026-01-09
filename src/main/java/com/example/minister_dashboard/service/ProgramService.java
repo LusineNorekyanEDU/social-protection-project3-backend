@@ -15,7 +15,7 @@ public class ProgramService {
         this.repo = repo;
     }
 
-    @Cacheable("programs")
+    //@Cacheable("programs")
     public List<ProgramDto> getAllPrograms(boolean onlyActive) {
         var programs = onlyActive
                 ? repo.findByIsActiveTrueOrderByProgramNameAsc()
